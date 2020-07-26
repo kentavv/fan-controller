@@ -11,9 +11,9 @@ Below are links to the items that I used. Most of these are Amazon Affiliate lin
 ## Arduino
 I prefer the Arduino Uno with a socketed DIP since it's easily repairable, but the SMD version is a little less expensive. The bare shield is a convenient for mounting all.
 
-[Arduino Uno R3, with DIP socket](https://amzn.to/2Ekh8hU)
+[Arduino Uno R3, DIP version](https://amzn.to/2Ekh8hU)
 
-[Arduino Uno R3, SMD](https://amzn.to/3jF4XfJ)
+[Arduino Uno R3, SMD version](https://amzn.to/3jF4XfJ)
 
 [Arduino Uno R3 Bare Shield](https://amzn.to/3hA0Lfq)
 
