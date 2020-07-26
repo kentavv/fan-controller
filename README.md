@@ -47,7 +47,9 @@ The GPIO board is not required, but will useful if you wish to use the Nextion d
 The DS18B20 and OTI-301 were used. The OTI-301 has a response curve in its manual, but the MLX90614ESF has a richer datasheet. The OTI-301 is also harder to find than the MLX90614ESF.
 
 [DS18B20-based Contact Temperature Sensor](https://amzn.to/32WuU4u)
+
 [OTI-301-based Non-contact Temperature Sensor](https://amzn.to/32WzyzE)
+
 [MLX90614ESF-based Non-contact Temperature Sensor](https://amzn.to/2CQswS5)
 
 
