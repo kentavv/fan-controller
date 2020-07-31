@@ -1,19 +1,31 @@
-// Nextion display instruction set: https://nextion.tech/instruction-set/
-// Tested with: Nextion Enhanced 3.5" HMI Resistive Touch Screen UART LCD Display Module NX4832K035 480x320
-// https://nextion.tech/datasheets/nx4832k035/
+// Arduino Uno pintout: https://upload.wikimedia.org/wikipedia/commons/c/c9/Pinout_of_ARDUINO_Board_and_ATMega328PU.svg
+// Arduino Uno PWM is 490Hz on all PWM pins except pins 5 & 6 which have 980Hz PWM: https://www.arduino.cc/reference/en/language/functions/analog-io/analogwrite/
+//
+// To communicate with the display, AltSoftSerial is used, retaining use of the Arduino's USB serial.
 // AltSoftSerial docs: https://www.pjrc.com/teensy/td_libs_AltSoftSerial.html
 // AltSoftSerial disables PWM on Ardunio Uno pin 10, transmits on pin 9 and receives on pin 8
-// Arduino Uno pintout: https://upload.wikimedia.org/wikipedia/commons/c/c9/Pinout_of_ARDUINO_Board_and_ATMega328PU.svg
+//
+// Tested with: Nextion Enhanced 3.5" HMI Resistive Touch Screen UART LCD Display Module NX4832K035 480x320
+// https://nextion.tech/datasheets/nx4832k035/
+// Nextion display instruction set: https://nextion.tech/instruction-set/
 // Nice Nextion tutorial: https://www.seithan.com/projects/nextion-tutorial/
-// Arduino Uno PWM is 490Hz on all PWM pins except pins 5 & 6 which have 980Hz PWM: https://www.arduino.cc/reference/en/language/functions/analog-io/analogwrite/
 
+#define INCLUDE_CS 1
+#define INCLUDE_NCS 1
+
+#if INCLUDE_CS
 #include <DallasTemperature.h>
-#include <AltSoftSerial.h>
 #include <OneWire.h>
+#endif
+
+#if INCLUDE_NCS
 #include <Wire.h>
+#endif
+
+#include <AltSoftSerial.h>
 
 const struct {
-  int h = 220; // the height of the Netion graph
+  int h = 220; // the height of the Nextion graph
   float min_temp = 24; // the minimum temperature shown on graph
   float max_temp = 80; // the maximum temperature shown on the graph
   float max_fan_rpm = 3000.; // the maximum fan speed shown on the graph
@@ -31,7 +43,10 @@ const struct {
   float deadzone = .2; // hysteresis band: +/- deadzone
 } fan_config;
 
+#if INCLUDE_CS
 const int one_wire_pin = 4;
+#endif
+
 const int pwm_pin = 5;
 const int tach_pin = 3;
 
@@ -59,8 +74,10 @@ unsigned long last_temp_mode_change = 0;
 char nex_buffer[128]; // temp variable holding Nextion command string
 
 AltSoftSerial altSerial; // Pins tx:9 rc:8, Nextion: yellow->9, blue->8
+#if INCLUDE_CS
 OneWire oneWire(one_wire_pin);
 DallasTemperature sensors(&oneWire);
+#endif
 
 void isr_fan_pulse();
 void find_min_max();
@@ -73,8 +90,16 @@ void setup(void) {
   Serial.begin(9600);
   altSerial.begin(38400);
 
+#if INCLUDE_CS
   sensors.begin();
+  sensors.setResolution(9);
+  Serial.print("Parasitic power needed:");
+  Serial.println(sensors.isParasitePowerMode());
+#endif
+
+#if INCLUDE_NCS
   Wire.begin();
+#endif
 
   last_fan_start = millis();
   attachInterrupt(digitalPinToInterrupt(tach_pin), isr_fan_pulse, RISING);
@@ -377,6 +402,7 @@ void update_display(float temp, int fan_rpm) {
   }
 }
 
+#if INCLUDE_NCS
 bool read_nc_temp(float &tmp) {
   bool rv = false;
   const int addr = 0x10; // I2C addresses at 7-bit, must shift documented 0x20 address, so 0x10.
@@ -417,19 +443,30 @@ bool read_nc_temp(float &tmp) {
 
   return rv;
 }
+#endif
 
 void loop(void) {
   float temp=0, nc_temp=0;
-  
-  // The combintion of request and retrieval is a slow operation, 0.5Hz or so.
-  // But after some resets the delay is ~120ms while other times ~500ms, and
-  // the delay is consistent within a couple of seconds following a reset.
+
+  long _a = millis();
+#if INCLUDE_CS
+  // The combintion of request and retrieval is a slow operation. At 12-bit
+  // resolution ~540ms and at 9-bit resolution ~120ms.
+  // Can make a non-blocking request by calling sensors.setWaitForConversion(false)
+  // before sensors.requestTemperatures(). This requires polling to check if conversion
+  // is complete. See DallasTemperature::blockTillConversionComplete() for details.
   sensors.requestTemperatures();
   temp = sensors.getTempCByIndex(0);
+#endif
+  long _b = millis();
 
   // Compared to the contact temperature sensor, the non-contact sensor is 
-  // essentially instantaneous.
+  // essentially instant.
+  long _c, _d;
+  _c = _d = millis();
+#if INCLUDE_NCS
   if (read_nc_temp(nc_temp)) {
+    _d = millis();
     Serial.print("Contact:");
     Serial.print(temp);
     Serial.print(" Non-contact:");
@@ -437,10 +474,30 @@ void loop(void) {
 
     temp = nc_temp;
   }
+#endif
+  long _e = millis();
 
   int new_fan_pwm = target_fan_pwm(temp);
   set_fan_speed(new_fan_pwm);
   int fan_rpm = fan_speed();
 
+  long _f = millis();
   update_display(temp, fan_rpm);
+  long _g = millis();
+
+#if 0
+  Serial.print("Times in loop(): ");
+  Serial.print(_b - _a);
+  Serial.print(" ");
+  Serial.print(_c - _b);
+  Serial.print(" ");
+  Serial.print(_d - _c);
+  Serial.print(" ");
+  Serial.print(_e - _d);
+  Serial.print(" ");
+  Serial.print(_f - _e);
+  Serial.print(" ");
+  Serial.print(_g - _f);
+  Serial.println(" ");
+#endif
 }
