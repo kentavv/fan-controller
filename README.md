@@ -22,15 +22,15 @@ I prefer the Arduino Uno with a socketed DIP since it's easily repairable, but t
 
 
 ## Power conversion
-The Murata DC-DC converters will produce a sufficient 5V to power the electronics from a single 12V or 24V source that also powers the fan. To save space, the converter should be mounted flush with the shield, which may require a right-angle header, depending on the Murata model available.
+A Murata DC-DC converter supplies 12V to the Arduino Uno from the 24V source that also powers the fan. (The Arduino Uno's regulator supplies the display and sensors.) To reduce height, the converter should be mounted flush with the shield. The W36H model is easiest to mount, but the W36 model can be mounted to a right-angle header.
 
-[Right-angle Headers](https://amzn.to/39v0EPC)
-
-[Murata DC-DC Converter OKI-78SR-5/1.5-W36-C](https://amzn.to/30IcyS2)
+[Murata DC-DC Converter OKI-78SR-12/1.0-W36H-C](https://www.digikey.com/product-detail/en/murata-power-solutions-inc/OKI-78SR-12-1-0-W36H-C/811-3294-ND/6817699)
 
 or 
 
-[Murata DC-DC Converter OKI-78SR-5/1.5-W36H-C](https://www.digikey.com/product-detail/en/murata-power-solutions-inc/OKI-78SR-5-1-5-W36H-C/811-2692-ND/3438675)
+[Right-angle Headers](https://amzn.to/39v0EPC)
+
+[Murata DC-DC Converter OKI-78SR-12/1.0-W36-C](https://www.digikey.com/product-detail/en/murata-power-solutions-inc/OKI-78SR-12-1-0-W36-C/811-3293-ND/6817698)
 
 
 
