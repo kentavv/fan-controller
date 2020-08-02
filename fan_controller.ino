@@ -10,7 +10,7 @@
 // Nextion display instruction set: https://nextion.tech/instruction-set/
 // Nice Nextion tutorial: https://www.seithan.com/projects/nextion-tutorial/
 
-#define INCLUDE_CS 1
+#define INCLUDE_CS 0
 #define INCLUDE_NCS 1
 
 #if INCLUDE_CS
@@ -27,7 +27,7 @@
 const struct {
   int h = 220; // the height of the Nextion graph
   float min_temp = 24; // the minimum temperature shown on graph
-  float max_temp = 80; // the maximum temperature shown on the graph
+  float max_temp = 100; // the maximum temperature shown on the graph
   float max_fan_rpm = 3000.; // the maximum fan speed shown on the graph
 } graph_config;
       
@@ -93,8 +93,8 @@ void setup(void) {
 #if INCLUDE_CS
   sensors.begin();
   sensors.setResolution(9);
-  Serial.print("Parasitic power needed:");
-  Serial.println(sensors.isParasitePowerMode());
+  // Serial.print("Parasitic power needed:");
+  // Serial.println(sensors.isParasitePowerMode());
 #endif
 
 #if INCLUDE_NCS
