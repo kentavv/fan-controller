@@ -448,7 +448,6 @@ bool read_nc_temp(float &tmp) {
 void loop(void) {
   float temp=0, nc_temp=0;
 
-  long _a = millis();
 #if INCLUDE_CS
   // The combintion of request and retrieval is a slow operation. At 12-bit
   // resolution ~540ms and at 9-bit resolution ~120ms.
@@ -458,15 +457,11 @@ void loop(void) {
   sensors.requestTemperatures();
   temp = sensors.getTempCByIndex(0);
 #endif
-  long _b = millis();
 
   // Compared to the contact temperature sensor, the non-contact sensor is 
   // essentially instant.
-  long _c, _d;
-  _c = _d = millis();
 #if INCLUDE_NCS
   if (read_nc_temp(nc_temp)) {
-    _d = millis();
     Serial.print("Contact:");
     Serial.print(temp);
     Serial.print(" Non-contact:");
@@ -475,29 +470,10 @@ void loop(void) {
     temp = nc_temp;
   }
 #endif
-  long _e = millis();
 
   int new_fan_pwm = target_fan_pwm(temp);
   set_fan_speed(new_fan_pwm);
   int fan_rpm = fan_speed();
 
-  long _f = millis();
   update_display(temp, fan_rpm);
-  long _g = millis();
-
-#if 0
-  Serial.print("Times in loop(): ");
-  Serial.print(_b - _a);
-  Serial.print(" ");
-  Serial.print(_c - _b);
-  Serial.print(" ");
-  Serial.print(_d - _c);
-  Serial.print(" ");
-  Serial.print(_e - _d);
-  Serial.print(" ");
-  Serial.print(_f - _e);
-  Serial.print(" ");
-  Serial.print(_g - _f);
-  Serial.println(" ");
-#endif
 }
