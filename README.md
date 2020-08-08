@@ -1,7 +1,9 @@
 # fan-controller
 A temperature driven fan controller with a Nextion touchscreen display and Arduino reading contact and non-contact temperature sensors.
 
-I used this to control a fan that cools a servo motor used as a spindle motor on a CNC mill.
+I use the fan controller to control a cooling fan of an AC servo motor used as a spindle motor on a CNC mill.
+
+An overview of the project is available in [video form](https://www.youtube.com/watch?v=nkzJMKOuecU).
 
 
 # Bill of materials
